@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ICCSharp
 {
-    public class TcpServer : Component
+    public class TcpServer : Component, ITcpServer
     {
         private readonly LinkedList<object> _tcpClients = new LinkedList<object>();
         private TcpListener Listener { get; set; }
