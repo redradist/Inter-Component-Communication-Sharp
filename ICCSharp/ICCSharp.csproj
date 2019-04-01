@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>AsyncAwait</RootNamespace>
+        <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    </PropertyGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICCSharp", "ICCSharp\ICCSharp.csproj", "{2304D2AF-150E-4912-A72E-1B2F05D11B2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingICCSharp", "TestingICCSharp\TestingICCSharp.csproj", "{166063D3-1BD9-467F-B6E7-FCF77D923F9F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2304D2AF-150E-4912-A72E-1B2F05D11B2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2304D2AF-150E-4912-A72E-1B2F05D11B2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2304D2AF-150E-4912-A72E-1B2F05D11B2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2304D2AF-150E-4912-A72E-1B2F05D11B2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{166063D3-1BD9-467F-B6E7-FCF77D923F9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{166063D3-1BD9-467F-B6E7-FCF77D923F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{166063D3-1BD9-467F-B6E7-FCF77D923F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{166063D3-1BD9-467F-B6E7-FCF77D923F9F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
