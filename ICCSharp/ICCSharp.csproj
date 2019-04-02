@@ -8,6 +8,8 @@
         <Authors>redradist</Authors>
         <Description>Inter Component Communication for C#</Description>
         <RepositoryUrl>https://github.com/redradist/Inter-Component-Communication-Sharp</RepositoryUrl>
+        <PackageLicenseUrl>https://github.com/redradist/Inter-Component-Communication-Sharp/blob/trunk/LICENSE</PackageLicenseUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
 </Project>
