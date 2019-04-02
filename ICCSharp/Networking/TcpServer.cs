@@ -9,10 +9,11 @@ namespace ICCSharp
     public class TcpServer : Component, ITcpServer
     {
         private readonly LinkedList<object> _tcpClients = new LinkedList<object>();
-        private TcpListener Listener { get; set; }
-        private bool Accept { get; set; } = false;
         private readonly ThreadPool _threadPool;
         private readonly Type _clientType;
+        
+        private TcpListener _listener;
+        private volatile bool _accept;
 
         public event Action<object> ClientConnected;
         
@@ -44,9 +45,9 @@ namespace ICCSharp
 
         public void StartServer(IPAddress ipAddress, int port)
         {
-            Listener = new TcpListener(ipAddress, port);
-            Listener.Start();
-            Accept = true;
+            _listener = new TcpListener(ipAddress, port);
+            _listener.Start();
+            _accept = true;
 
             StartTask(function: async () =>
             {
@@ -58,28 +59,28 @@ namespace ICCSharp
         
         public void StopServer()
         {
-            Accept = false;
-            Listener.Stop();
+            _accept = false;
+            _listener.Stop();
         }
 
         private async Task ListenAsync()
         {
-            if (Listener != null && Accept)
+            if (_listener != null)
             {
                 // Continue listening.  
-                while (true)
+                while (_accept)
                 {
                     Console.WriteLine("Waiting for client...");
-                    var client = await Listener.AcceptTcpClientAsync(); // Get the client
+                    var client = await _listener.AcceptTcpClientAsync(); // Get the client
                     if (client != null)
                     {
                         Console.WriteLine("Client connected. Waiting for data.");
                         var customClient = _clientType
                                            .GetConstructor(types: new[] {client.GetType()})
                                            .Invoke(parameters: new object[] {client});
+                        StartClient(client);
                         _tcpClients.AddLast(customClient);
                         OnClientConnected(customClient);
-                        StartClient(client);
                     }
                 }
             }
@@ -91,20 +92,18 @@ namespace ICCSharp
             {
                 _threadPool.StartTask(async () =>
                 {
-                    await (Task) client
-                                 .GetType()
+                    await (Task) _clientType
                                  .GetMethod("Run")
-                                 .Invoke(client, parameters: new object[] { client });
+                                 .Invoke(client, parameters: new[] { client });
                 });
             }
             else
             {
                 StartTask(async () =>
                 {
-                    await (Task) client
-                                 .GetType()
+                    await (Task) _clientType
                                  .GetMethod("Run")
-                                 .Invoke(client, parameters: new object[] { client });
+                                 .Invoke(client, parameters: new[] { client });
                 });
             }
         }
