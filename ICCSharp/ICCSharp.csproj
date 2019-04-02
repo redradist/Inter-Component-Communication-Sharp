@@ -2,6 +2,12 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>ICCSharp_redradist</PackageId>
+        <Title>ICCSharp</Title>
+        <Authors>redradist</Authors>
+        <Description>Inter Component Communication for C#</Description>
+        <RepositoryUrl>https://github.com/redradist/Inter-Component-Communication-Sharp</RepositoryUrl>
     </PropertyGroup>
 
 </Project>
