@@ -12,7 +12,7 @@ namespace ICCSharp
         private static bool _currentThreadIsProcessingItems;
         
         // The list of tasks to be executed 
-        private readonly LinkedList<Task> _tasks = new LinkedList<Task>(); // protected by lock(_tasks)
+        private new readonly LinkedList<Task> _tasks = new LinkedList<Task>(); // protected by lock(_tasks)
         
         // The maximum concurrency level allowed by this scheduler. 
         private readonly int _maxDegreeOfParallelism;

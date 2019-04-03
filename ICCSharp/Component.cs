@@ -12,16 +12,19 @@ namespace ICCSharp
     public class Component : TaskScheduler, IComponent
     {
         #region Private Fields
-        private readonly bool _isFactoryOwner;
         private readonly TaskFactory _factory;
-        private readonly ConcurrentQueue<Task> _tasks = new ConcurrentQueue<Task>();
-        
-        private int? _workerThreadId;
-        private Thread? _workerThread;
-        private volatile bool _stopped;
-        private volatile bool _passive;
         #endregion
 
+        #region Protected Fields
+        protected readonly bool _isFactoryOwner;
+        protected readonly ConcurrentQueue<Task> _tasks = new ConcurrentQueue<Task>();
+        
+        protected int? _workerThreadId;
+        protected Thread? _workerThread;
+        protected volatile bool _stopped;
+        protected volatile bool _passive;
+        #endregion
+        
         /// <summary>
         /// Constructor for creating main Component
         /// </summary>
