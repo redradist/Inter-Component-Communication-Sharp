@@ -17,7 +17,7 @@ namespace ICCSharp
         private readonly ConcurrentQueue<Task> _tasks = new ConcurrentQueue<Task>();
         
         private int? _workerThreadId;
-        private Thread _workerThread;
+        private Thread? _workerThread;
         private volatile bool _stopped;
         private volatile bool _passive;
         #endregion
@@ -96,11 +96,13 @@ namespace ICCSharp
         }
 
         /// <summary>
-        /// 
+        /// Method call by parent TaskScheduler when it tries to execute task either
+        /// on the same Thread or
+        /// Thread from ThreadPool
         /// </summary>
-        /// <param name="task"></param>
-        /// <param name="taskWasPreviouslyQueued"></param>
-        /// <returns></returns>
+        /// <param name="task">Task to execute</param>
+        /// <param name="taskWasPreviouslyQueued">Indicates if this task was previously queued</param>
+        /// <returns>True - if task executed successfully, false - otherwise</returns>
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
             if (task != null)
@@ -222,7 +224,7 @@ namespace ICCSharp
         /// This method waiting finishing workerThread if it was created for Component
         /// </summary>
         /// <exception cref="NotSupportedException"></exception>
-        public void Join()
+        public virtual void Join()
         {
             if (_workerThread != null)
             {

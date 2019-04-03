@@ -9,13 +9,20 @@ namespace ICCSharp
     public class TcpServer : Component, ITcpServer
     {
         private readonly LinkedList<object> _tcpClients = new LinkedList<object>();
-        private readonly ThreadPool _threadPool;
+        private readonly ThreadPool? _threadPool;
         private readonly Type _clientType;
         
-        private TcpListener _listener;
+        private TcpListener? _listener;
         private volatile bool _accept;
 
         public event Action<object> ClientConnected;
+        
+        public TcpServer(Component _parent, Type clientType)
+        : base(_parent)
+        {
+            ValidateClientType(clientType);
+            _clientType = clientType;
+        }
         
         public TcpServer(Type clientType)
         {
@@ -23,6 +30,14 @@ namespace ICCSharp
             _clientType = clientType;
         }
 
+        public TcpServer(Component _parent, Type clientType, int clientThreads)
+        : base(_parent)
+        {
+            ValidateClientType(clientType);
+            _clientType = clientType;
+            _threadPool = new ThreadPool(clientThreads);
+        }
+        
         public TcpServer(Type clientType, int clientThreads)
         {
             ValidateClientType(clientType);
@@ -60,7 +75,7 @@ namespace ICCSharp
         public void StopServer()
         {
             _accept = false;
-            _listener.Stop();
+            _listener?.Stop();
         }
 
         private async Task ListenAsync()
