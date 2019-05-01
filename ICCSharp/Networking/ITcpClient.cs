@@ -1,10 +1,15 @@
+using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace ICCSharp
+namespace ICCSharp.Networking
 {
     public interface ITcpClient
     {
-        Task Run();
-        void HandleBuffer(byte[] buffer, out int offset);
+        event Action<byte[]> DataReceived;
+        Task ConnectAsync(IPAddress parse, int port);
+        Task SendAsync(byte[] buffer);
+        Task ReadAsync();
     }
 }

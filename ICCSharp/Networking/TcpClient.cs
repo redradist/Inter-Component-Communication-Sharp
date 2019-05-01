@@ -1,10 +1,11 @@
 using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace ICCSharp
+namespace ICCSharp.Networking
 {
-    public class TcpClient : ITcpClient
+    public class TcpClient : Component, ITcpClient
     {
         private const int BufferSize = 4096;
         
@@ -12,29 +13,62 @@ namespace ICCSharp
 
         public event Action<byte[]> DataReceived;
         
+        public TcpClient()
+        {
+            Client = new System.Net.Sockets.TcpClient();
+        }
+        
         public TcpClient(System.Net.Sockets.TcpClient client)
         {
             Client = client;
         }
+        
+        public TcpClient(Component parent)
+            : base(parent)
+        {
+            Client = new System.Net.Sockets.TcpClient();
+        }
 
-        public virtual async Task Run()
+        public TcpClient(Component parent, System.Net.Sockets.TcpClient client)
+            : base(parent)
+        {
+            Client = client;
+        }
+        
+        public virtual async Task ConnectAsync(IPAddress parse, int port)
+        {
+            await Client.ConnectAsync(parse, port);
+        }
+
+        public virtual async Task SendAsync(byte[] buffer)
         {
             using (NetworkStream stream = Client.GetStream())
             {
-                int offset = 0;
+                await stream.WriteAsync(buffer, 0, buffer.Length);
+            }
+        }
+        
+        public virtual async Task ReadAsync()
+        {
+            using (NetworkStream stream = Client.GetStream())
+            {
                 while (true)
                 {
                     byte[] buffer = new byte[BufferSize];
-                    await stream.ReadAsync(buffer, offset, buffer.Length);
-                    HandleBuffer(buffer, out offset);
+                    int readBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    if (readBytes == 0)
+                    {
+                        // End of stream. Finish reading data
+                        break;
+                    }
+                    HandleBuffer(buffer, readBytes);
                 }
             }
         }
-
-        public virtual void HandleBuffer(byte[] buffer, out int offset)
+        
+        protected virtual void HandleBuffer(byte[] buffer, int readBytes)
         {
             OnDataReceived(buffer);
-            offset = 0;
         }
 
         protected virtual void OnDataReceived(byte[] obj)

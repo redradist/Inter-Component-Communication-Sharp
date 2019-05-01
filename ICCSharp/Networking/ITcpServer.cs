@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace ICCSharp
+namespace ICCSharp.Networking
 {
     public interface ITcpServer
     {

@@ -4,53 +4,36 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace ICCSharp
+namespace ICCSharp.Networking
 {
     public class TcpServer : Component, ITcpServer
     {
-        private readonly LinkedList<object> _tcpClients = new LinkedList<object>();
+        private readonly LinkedList<TcpClient> _tcpClients = new LinkedList<TcpClient>();
         private readonly ThreadPool? _threadPool;
-        private readonly Type _clientType;
         
         private TcpListener? _listener;
         private volatile bool _accept;
 
-        public event Action<object> ClientConnected;
+        public event Action<TcpClient> ClientConnected;
         
-        public TcpServer(Component _parent, Type clientType)
-        : base(_parent)
+        public TcpServer()
         {
-            ValidateClientType(clientType);
-            _clientType = clientType;
         }
         
-        public TcpServer(Type clientType)
+        public TcpServer(Component parent)
+        : base(parent)
         {
-            ValidateClientType(clientType);
-            _clientType = clientType;
         }
-
-        public TcpServer(Component _parent, Type clientType, int clientThreads)
-        : base(_parent)
+        
+        public TcpServer(Component parent, int clientThreads)
+        : base(parent)
         {
-            ValidateClientType(clientType);
-            _clientType = clientType;
             _threadPool = new ThreadPool(clientThreads);
         }
         
-        public TcpServer(Type clientType, int clientThreads)
+        public TcpServer(int clientThreads)
         {
-            ValidateClientType(clientType);
-            _clientType = clientType;
             _threadPool = new ThreadPool(clientThreads);
-        }
-        
-        private void ValidateClientType(Type clientType)
-        {
-            if (clientType.GetInterface("ICCSharp.ITcpClient") == null)
-            {
-                throw new NotSupportedException($"clientType should implement ICC.ITcpClient interface !!"); 
-            }
         }
         
         public void StartServer(string ipAddress, string port)
@@ -69,7 +52,10 @@ namespace ICCSharp
                 Console.WriteLine($"Server started. Listening to TCP clients at tcp://127.0.0.1:{port}");
                 await ListenAsync();
             });
-            Run();
+            if (_isFactoryOwner)
+            {
+                Run();
+            }
         }
         
         public void StopServer()
@@ -82,7 +68,7 @@ namespace ICCSharp
         {
             if (_listener != null)
             {
-                // Continue listening.  
+                // Continue listening ...  
                 while (_accept)
                 {
                     Console.WriteLine("Waiting for client...");
@@ -90,10 +76,8 @@ namespace ICCSharp
                     if (client != null)
                     {
                         Console.WriteLine("Client connected. Waiting for data.");
-                        var customClient = _clientType
-                                           .GetConstructor(types: new[] {client.GetType()})
-                                           .Invoke(parameters: new object[] {client});
-                        StartClient(client);
+                        var customClient = new TcpClient(client);
+                        StartClient(customClient);
                         _tcpClients.AddLast(customClient);
                         OnClientConnected(customClient);
                     }
@@ -101,29 +85,25 @@ namespace ICCSharp
             }
         }
 
-        private void StartClient(object client)
+        private void StartClient(TcpClient client)
         {
             if (_threadPool != null)
             {
                 _threadPool.StartTask(async () =>
                 {
-                    await (Task) _clientType
-                                 .GetMethod("Run")
-                                 .Invoke(client, parameters: new[] { client });
+                    await client.ReadAsync();
                 });
             }
             else
             {
                 StartTask(async () =>
                 {
-                    await (Task) _clientType
-                                 .GetMethod("Run")
-                                 .Invoke(client, parameters: new[] { client });
+                    await client.ReadAsync();
                 });
             }
         }
 
-        protected virtual void OnClientConnected(object obj)
+        protected virtual void OnClientConnected(TcpClient obj)
         {
             ClientConnected?.Invoke(obj);
         }
